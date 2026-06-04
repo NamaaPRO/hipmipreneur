@@ -1,10 +1,16 @@
 import { createClient } from '@/utils/supabase/server';
-import OpenAI from 'openai';
+import { chatJSON } from '@/lib/openrouter';
 import { NextResponse } from 'next/server';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const SYSTEM_PROMPT = `Create an execution roadmap in JSON:
+{
+  "phases": [
+    {"phase": "Phase 1: Discovery", "duration": "2 weeks", "tasks": ["task 1"], "milestones": ["milestone 1"]},
+    {"phase": "Phase 2: Validation", "duration": "3 weeks", "tasks": ["task 1"], "milestones": ["milestone 1"]},
+    {"phase": "Phase 3: MVP", "duration": "4 weeks", "tasks": ["task 1"], "milestones": ["milestone 1"]},
+    {"phase": "Phase 4: Scale", "duration": "ongoing", "tasks": ["task 1"], "milestones": ["milestone 1"]}
+  ]
+}`;
 
 export async function POST(request: Request) {
   const supabase = createClient();
@@ -21,26 +27,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        {
-          role: 'system',
-          content: `Create an execution roadmap in JSON format: phases[phase, duration, tasks[], milestones[]]. Have 4 phases: Discovery, Validation, MVP Launch, Scale. Each phase 2-4 weeks.`,
-        },
-        {
-          role: 'user',
-          content: `For: ${idea}`,
-        },
-      ],
-    });
+    const roadmap = await chatJSON(`For: ${idea}`, SYSTEM_PROMPT);
 
-    const roadmap = JSON.parse(completion.choices[0].message.content);
-
-    await supabase
-      .from('projects')
-      .update({ roadmap })
-      .eq('id', projectId);
+    await supabase.from('projects').update({ roadmap }).eq('id', projectId);
 
     return NextResponse.json({ roadmap });
   } catch (error: any) {

@@ -1,10 +1,19 @@
 import { createClient } from '@/utils/supabase/server';
-import OpenAI from 'openai';
+import { chatJSON } from '@/lib/openrouter';
 import { NextResponse } from 'next/server';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const SYSTEM_PROMPT = `Generate a Business Model Canvas in JSON:
+{
+  "value_propositions": ["value prop 1"],
+  "customer_segments": ["segment 1"],
+  "channels": ["channel 1"],
+  "customer_relationships": ["relationship 1"],
+  "revenue_streams": ["revenue stream 1"],
+  "key_resources": ["resource 1"],
+  "key_activities": ["activity 1"],
+  "key_partnerships": ["partner 1"],
+  "cost_structure": ["cost 1"]
+}`;
 
 export async function POST(request: Request) {
   const supabase = createClient();
@@ -21,26 +30,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        {
-          role: 'system',
-          content: `Generate a Business Model Canvas in JSON format with these sections: value_propositions, customer_segments, channels, customer_relationships, revenue_streams, key_resources, key_activities, key_partnerships, cost_structure. Keep each section to 3-5 bullet points.`,
-        },
-        {
-          role: 'user',
-          content: `Idea: ${idea}\nAnalysis: ${JSON.stringify(analysis)}`,
-        },
-      ],
-    });
+    const canvas = await chatJSON(`Idea: ${idea}\nAnalysis: ${JSON.stringify(analysis)}`, SYSTEM_PROMPT);
 
-    const canvas = JSON.parse(completion.choices[0].message.content);
-
-    await supabase
-      .from('projects')
-      .update({ business_canvas: canvas })
-      .eq('id', projectId);
+    await supabase.from('projects').update({ business_canvas: canvas }).eq('id', projectId);
 
     return NextResponse.json({ canvas });
   } catch (error: any) {

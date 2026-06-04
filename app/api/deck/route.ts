@@ -1,10 +1,22 @@
 import { createClient } from '@/utils/supabase/server';
-import OpenAI from 'openai';
+import { chatJSON } from '@/lib/openrouter';
 import { NextResponse } from 'next/server';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const SYSTEM_PROMPT = `Create an investor pitch deck in JSON (10 slides):
+{
+  "slides": [
+    {"title": "Problem", "content": "...", "bullets": ["bullet 1"]},
+    {"title": "Solution", "content": "...", "bullets": ["bullet 1"]},
+    {"title": "Market", "content": "...", "bullets": ["bullet 1"]},
+    {"title": "Product", "content": "...", "bullets": ["bullet 1"]},
+    {"title": "Business Model", "content": "...", "bullets": ["bullet 1"]},
+    {"title": "Traction", "content": "...", "bullets": ["bullet 1"]},
+    {"title": "Team", "content": "...", "bullets": ["bullet 1"]},
+    {"title": "Financials", "content": "...", "bullets": ["bullet 1"]},
+    {"title": "The Ask", "content": "...", "bullets": ["bullet 1"]},
+    {"title": "Contact", "content": "...", "bullets": ["bullet 1"]}
+  ]
+}`;
 
 export async function POST(request: Request) {
   const supabase = createClient();
@@ -16,32 +28,17 @@ export async function POST(request: Request) {
 
   const { projectId, idea, analysis, canvas, persona, roadmap } = await request.json();
 
-
   if (!projectId || !idea) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        {
-          role: 'system',
-          content: `Create an investor pitch deck in JSON format: slides[{title, content, bullets}]\\n. Include 10 slides: Problem, Solution, Market, Product, Business Model, Traction, Team, Financials, Ask, Contact.`,
-        },
-        {
-          role: 'user',
-          content: `Idea: ${idea}\nCanvas: ${JSON.stringify(canvas)}\nPersona: ${JSON.stringify(persona)}\nRoadmap: ${JSON.stringify(roadmap)}`,
-        },
-      ],
-    });
+    const deck = await chatJSON(
+      `Idea: ${idea}\nCanvas: ${JSON.stringify(canvas)}\nPersona: ${JSON.stringify(persona)}\nRoadmap: ${JSON.stringify(roadmap)}`,
+      SYSTEM_PROMPT
+    );
 
-    const deck = JSON.parse(completion.choices[0].message.content);
-
-    await supabase
-      .from('projects')
-      .update({ investor_deck: deck })
-      .eq('id', projectId);
+    await supabase.from('projects').update({ investor_deck: deck }).eq('id', projectId);
 
     return NextResponse.json({ deck });
   } catch (error: any) {
