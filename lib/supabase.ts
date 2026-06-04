@@ -1,4 +1,4 @@
-import { createBrowserClient } from '@supabase/ssr';
+import { createBrowserClient } from '@supabase/ssb';
 
 export function supabaseClient() {
   return createBrowserClient(
@@ -6,5 +6,3 @@ export function supabaseClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 }
-
-export { supabase } from '@supabase/supabase-js'
