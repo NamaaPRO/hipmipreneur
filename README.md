@@ -1,23 +1,8 @@
 # Hipmipreneur
 
-AI-powered entrepreneurship platform to turn your ideas into businesses.
+AI-powered entrepreneurship platform.
 
-## 🚀 Features
-
-- **AI Analysis** - Validate your idea with AI
-- **Business Canvas** - Generate business model canvas
-- **Buyer Persona** - Create ideal customer profiles  
-- **Roadmap** - Step-by-step execution plan
-- **Investor Deck** - Auto-generate pitch deck
-
-## 🛠️ Tech Stack
-
-- **Frontend:** Next.js 14, React, Tailwind CSS, Framer Motion
-- **Backend:** Next.js API Routes
-- **AI:** OpenRouter (FREE models - Llama 3.1, Gemma, Mistral)
-- **Database:** Supabase (PostgreSQL + Auth)
-
-## ⚡️ Quick Start
+## 🚀 Quick Start
 
 ```bash
 # Clone
@@ -27,43 +12,68 @@ cd hipmipreneur
 # Install
 npm install
 
-# Setup environment
+# Setup Supabase
+# 1. Go to supabase.com
+# 2. Create new project
+# 3. Run SQL from database/schema.sql in SQL Editor
+# 4. Get URL and anon key
+
+# Setup Environment
 cp .env.local.example .env.local
-# Add your keys:
-# - Supabase URL & anon key from supabase.com
-# - OpenRouter API key from openrouter.ai (FREE credits)
+# Fill in your keys
 
 # Run
 npm run dev
 ```
 
-## 🔑 Environment Variables
+## 🛠️ Tech Stack
 
-| Variable | Description |
-|----------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key |
-| `OPENROUTER_API_KEY` | Get free key at openrouter.ai/credits |
+- **Frontend:** Next.js 14, React, Tailwind CSS, Framer Motion
+- **Backend:** Next.js API Routes / Flask (Python)
+- **AI:** OpenRouter (FREE models)
+- **Database:** Supabase (PostgreSQL)
 
-## 📦 API Routes
+## 📁 Project Structure
 
-| Endpoint | Description |
-|----------|-------------|
-| `/api/analyze` | AI analysis of idea |
-| `/api/canvas` | Business Model Canvas |
-| `/api/persona` | Buyer Persona |
-| `/api/roadmap` | Execution Roadmap |
-| `/api/deck` | Investor Pitch Deck |
+```
+hipmipreneur/
+├── app/                    # Next.js app router
+│   ├── page.tsx            # Landing page
+│   ├── dashboard/          # Dashboard pages
+│   └── api/                # API routes
+├── components/             # React components
+│   └── ui/                 # UI components
+├── lib/                    # Utilities
+│   ├── supabase.ts         # Supabase client
+│   └── openrouter.ts       # OpenRouter AI
+├── backend/                # Python Flask backend
+│   ├── main.py
+│   ├── routes/
+│   └── ai.py
+└── database/
+    └── schema.sql          # Database schema
+```
+
+
+## 🔧 API Routes
+
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/analyze` | POST | AI idea analysis |
+| `/api/canvas` | POST | Business Model Canvas |
+| `/api/persona` | POST | Buyer Persona |
+| `/api/roadmap` | POST | Execution Roadmap |
+| `/api/deck` | POST | Investor Pitch Deck |
 
 ## 🤖 Free AI Models
 
+
 Default: `meta-llama/llama-3.1-8b-instruct`
 
-Other available free models:
+Other free models:
 - `google/gemma-2-9b-it`
 - `mistralai/mistral-7b-instruct`
 - `anthropic/claude-3-haiku`
-
 
 ## 📄 License
 

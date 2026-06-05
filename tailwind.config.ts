@@ -7,7 +7,18 @@ const config: Config = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        slate: {
+          950: '#020617',
+        },
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.3s ease-out',
+        'slide-in': 'slideIn 0.3s ease-out',
+        'pulse-slow': 'pulse 2s ease-in-out infinite',
+      },
+    },
   },
   plugins: [],
 };
