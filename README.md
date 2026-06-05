@@ -4,6 +4,23 @@ AI-powered entrepreneurship platform.
 
 ## 🚀 Quick Start
 
+### Using Docker
+
+```bash
+# Clone and setup
+git clone https://github.com/NamaaPRO/hipmipreneur.git
+cd hipmipreneur
+
+# Copy environment file
+cp .env.local.example .env.local
+# Fill in your API keys
+
+# Start all services
+docker-compose up
+```
+
+### Manual Setup
+
 ```bash
 # Clone
 git clone https://github.com/NamaaPRO/hipmipreneur.git
@@ -26,47 +43,36 @@ cp .env.local.example .env.local
 npm run dev
 ```
 
+## 🐳 Docker Services
+
+| Service | Port | Description |
+|---------|------|-------------|
+| Next.js | 3000 | Frontend |
+| Flask | 5000 | Python AI Backend |
+| PostgreSQL | 5432 | Database |
+
 ## 🛠️ Tech Stack
 
 - **Frontend:** Next.js 14, React, Tailwind CSS, Framer Motion
 - **Backend:** Next.js API Routes / Flask (Python)
 - **AI:** OpenRouter (FREE models)
 - **Database:** Supabase (PostgreSQL)
+- **Docker:** Multi-stage builds
 
 ## 📁 Project Structure
 
 ```
 hipmipreneur/
 ├── app/                    # Next.js app router
-│   ├── page.tsx            # Landing page
-│   ├── dashboard/          # Dashboard pages
-│   └── api/                # API routes
 ├── components/             # React components
-│   └── ui/                 # UI components
 ├── lib/                    # Utilities
-│   ├── supabase.ts         # Supabase client
-│   └── openrouter.ts       # OpenRouter AI
+├── types/                  # TypeScript types
 ├── backend/                # Python Flask backend
-│   ├── main.py
-│   ├── routes/
-│   └── ai.py
-└── database/
-    └── schema.sql          # Database schema
+├── database/               # Database schema
+└── Dockerfile              # Docker configuration
 ```
 
-
-## 🔧 API Routes
-
-| Route | Method | Description |
-|-------|--------|-------------|
-| `/api/analyze` | POST | AI idea analysis |
-| `/api/canvas` | POST | Business Model Canvas |
-| `/api/persona` | POST | Buyer Persona |
-| `/api/roadmap` | POST | Execution Roadmap |
-| `/api/deck` | POST | Investor Pitch Deck |
-
 ## 🤖 Free AI Models
-
 
 Default: `meta-llama/llama-3.1-8b-instruct`
 
