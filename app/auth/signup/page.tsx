@@ -1,6 +1,9 @@
 'use client';
 
+
 import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Mail, Lock, Loader2, ArrowRight, User } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
@@ -8,65 +11,98 @@ export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    setError('');
     
     const { error } = await supabase.auth.signUp({ email, password });
     
     if (error) {
-      alert(error.message);
+      setError(error.message);
     } else {
-      alert('Check your email to confirm!');
+      alert('Check your email to confirm your account!');
       router.push('/auth/login');
     }
     setLoading(false);
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-      <div className="bg-slate-800 p-8 rounded-2xl border border-slate-700 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-white mb-6 text-center">Create Account</h1>
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md"
+      >
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Create Account</h1>
+          <p className="text-slate-400">Start building your business today</p>
+        </div>
         
-        <form onSubmit={handleSignup} className="space-y-4">
-          <div>
+        <form onSubmit={handleSignup} className="bg-slate-900/50 border border-slate-800 rounded-2xl p-8">
+          {error && (
+            <div className="bg-red-500/20 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl mb-6">
+              {error}
+            </div>
+          )}
+          
+          <div className="mb-6">
             <label className="text-slate-300 block mb-2">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-slate-700 border border-slate-600 text-white p-3 rounded-lg focus:outline-none focus:border-purple-500"
-              required
-            />
+            <div className="relative">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-slate-800 border border-slate-700 text-white p-4 pl-12 rounded-xl focus:outline-none focus:border-purple-500 transition"
+                placeholder="you@example.com"
+                required
+              />
+            </div>
           </div>
           
-          <div>
+          <div className="mb-6">
             <label className="text-slate-300 block mb-2">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-slate-700 border border-slate-600 text-white p-3 rounded-lg focus:outline-none focus:border-purple-500"
-              minLength={6}
-              required
-            />
+            <div className="relative">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-slate-800 border border-slate-700 text-white p-4 pl-12 rounded-xl focus:outline-none focus:border-purple-500 transition"
+                placeholder="••••••••"
+                minLength={6}
+                required
+              />
+            </div>
           </div>
           
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white py-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition disabled:opacity-50"
           >
-            {loading ? 'Creating account...' : 'Sign Up'}
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Creating account...
+              </>
+            ) : (
+              <>
+                Sign Up
+                <ArrowRight className="w-5 h-5" />
+              </>
+            )}
           </button>
         </form>
         
         <p className="text-slate-400 text-center mt-6">
           Already have an account? <a href="/auth/login" className="text-purple-400 hover:text-purple-300">Sign in</a>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }
